@@ -3,8 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 
-DB_NAME = "prices.db"  # your database
-PRODUCT_ID = 1                # product ID to plot
+DB_NAME = "prices.db"
+PRODUCT_ID = 1
 
 def fetch_prices(product_id):
     conn = sqlite3.connect(DB_NAME)

@@ -5,8 +5,10 @@ from sklearn.linear_model import LinearRegression
 
 product_id = int(input("Enter product ID to predict: "))
 
+# Retrieve historical price data for the given product ID
 price_data = get_prices(product_id)
 
+# Ensure there is enough data to build a prediction model
 if len(price_data) < 2:
     print("Not enough data to predict")
 else:
@@ -22,4 +24,5 @@ else:
 
     next_day = np.array([[df["days"].max() + 1]])
     predicted_price = model.predict(next_day)[0]
+    
     print(f"Predicted price tomorrow: ${predicted_price:.2f}")

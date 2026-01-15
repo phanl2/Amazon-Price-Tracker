@@ -6,6 +6,7 @@ DB_NAME = "prices.db"
 
 
 def get_connection():
+    # Create and return a new database connection
     return sqlite3.connect(DB_NAME)
 
 
@@ -13,6 +14,7 @@ def init_db():
     conn = get_connection()
     cursor = conn.cursor()
 
+    # Table to store Amazon Products
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,6 +23,7 @@ def init_db():
         )
     """)
 
+    # Table to store price data for each product
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS prices (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,6 +39,7 @@ def init_db():
 
 
 def get_or_create_product(title: str, url: str) -> int:
+    # Retrieve an existing product ID or create a new one if it doesn't exist
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -45,6 +49,7 @@ def get_or_create_product(title: str, url: str) -> int:
     )
     row = cursor.fetchone()
 
+    # Use a products existing ID or create a new ID
     if row:
         product_id = row[0]
     else:
@@ -59,6 +64,7 @@ def get_or_create_product(title: str, url: str) -> int:
     return product_id
 
 
+# Inserting price for testing
 def insert_price(product_id: int, price: float):
     conn = get_connection()
     cursor = conn.cursor()
