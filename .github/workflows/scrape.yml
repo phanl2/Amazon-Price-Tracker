@@ -32,3 +32,9 @@ jobs:
     - name: Run scraper
       run: |
         python scraper.py
+
+    - name: Upload database
+      uses: actions/upload-artifact@v3
+      with:
+        name: prices-db
+        path: prices.db
