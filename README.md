@@ -1,1 +1,17 @@
-Amazon Price Tracker is a Python-based project that automatically monitors Amazon product prices, logs data, and notifies you of price drops. Designed for automation, keeps track of price trends over time, making it easy to analyze and make purchasing decisions.
+# Amazon Price Tracker
+
+Track Amazon product prices over time and predict future price changes using Python, SQLite, and machine learning.
+
+Features
+
+- Scrape Amazon product pages for product title and price.
+
+- Store historical prices in a local SQLite database (prices.db).
+
+- Predict the next day’s price using a simple linear regression model.
+
+- Plot historical and predicted prices with a visual chart.
+
+- Supports daily scrapes at 8 am UTC via Cron (locally) or GitHub Actions.
+
+![Price History Chart](price_history.png)
