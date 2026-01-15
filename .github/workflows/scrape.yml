@@ -26,6 +26,9 @@ jobs:
         pip install -r requirements.txt
         pip install beautifulsoup4 requests lxml pandas sklearn
 
+    - name: Initialize database
+      run: python -c "from database import init_db; init_db()"
+
     - name: Run scraper
       run: |
         python scraper.py
