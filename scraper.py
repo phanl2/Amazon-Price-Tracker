@@ -3,12 +3,22 @@ from bs4 import BeautifulSoup
 from database import init_db, get_or_create_product, insert_price
 from config import HEADERS, TIMEOUT
 
+# Path to the text file containing product URLS
+PRODUCTS_FILE = "urls.txt"
+
 # Helper functions
 
+def load_product_urls(filename: str) -> list[str]:
+    try:
+        with open(filename, "r") as f:
+            urls = [line.strip() for line in f if line.strip()]
+        return urls
+    except FileNotFoundError:
+        print(f"Error: {filename} not found.")
+        return []
+
 def fetch_product_page(url: str) -> tuple[str, str]:
-    """
-    Fetch the product page HTML and return both HTML and final URL.
-    """
+    # Fetch the product page HTML and return both HTML and final URL.
     response = requests.get(
         url,
         headers=HEADERS,
@@ -19,9 +29,7 @@ def fetch_product_page(url: str) -> tuple[str, str]:
     return response.text, response.url  # HTML and final URL
 
 def parse_title(soup: BeautifulSoup) -> str:
-    """
-    Parse the product title. Fallback to first <h1> if productTitle not found.
-    """
+    # Parse the product title. Fallback to first <h1> if productTitle not found.
     title_tag = soup.find(id="productTitle")
     if not title_tag:
         title_tag = soup.find("h1")
@@ -30,9 +38,7 @@ def parse_title(soup: BeautifulSoup) -> str:
     return title_tag.get_text(strip=True)
 
 def parse_price(soup: BeautifulSoup) -> float:
-    """
-    Parse the product price using multiple common selectors.
-    """
+    # Parse the product price using multiple common selectors.
     price_selectors = [
         "span.a-offscreen",      # most reliable
         "span.a-price-whole"
@@ -50,10 +56,8 @@ def parse_price(soup: BeautifulSoup) -> float:
     raise ValueError("Could not find product price")
 
 def scrape_amazon_product(url: str) -> dict:
-    """
-    Fetch and parse Amazon product data.
-    Returns a dictionary with title, price, and final URL.
-    """
+    # Fetch and parse Amazon product data.
+    # Returns a dictionary with title, price, and final URL.
     html, final_url = fetch_product_page(url)
     soup = BeautifulSoup(html, "lxml")
     title = parse_title(soup)
@@ -65,19 +69,22 @@ def scrape_amazon_product(url: str) -> dict:
 if __name__ == "__main__":
     init_db()
 
-    url = input("Enter Amazon product URL: ").strip()
+    # Load product URls from text file instead of prompting
+    product_urls = load_product_urls(PRODUCTS_FILE)
+    #url = input("Enter Amazon product URL: ").strip()
 
-    try:
-        product = scrape_amazon_product(url)
+    for url in product_urls:
+        try:
+            product = scrape_amazon_product(url)
 
-        # Save using the expanded/final URL
-        product_id = get_or_create_product(product["title"], product["url"])
-        insert_price(product_id, product["price"])
+            # Save using the expanded/final URL
+            product_id = get_or_create_product(product["title"], product["url"])
+            insert_price(product_id, product["price"])
 
-        print("\nProduct Found & Saved")
-        print("----------------------")
-        print(f"Title     : {product['title']}")
-        print(f"Price     : ${product['price']:.2f}")
+            print("\nProduct Found & Saved")
+            print("----------------------")
+            print(f"Title     : {product['title']}")
+            print(f"Price     : ${product['price']:.2f}")
 
-    except Exception as e:
-        print(f"Error: {e}")
+        except Exception as e:
+            print(f"Error: {e}")

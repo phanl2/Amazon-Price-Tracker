@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+from typing import List, Tuple
 
 DB_NAME = "prices.db"
 
@@ -64,8 +65,20 @@ def insert_price(product_id: int, price: float):
 
     cursor.execute(
         "INSERT INTO prices (product_id, price, timestamp) VALUES (?, ?, ?)",
-        (product_id, price, datetime.utcnow().isoformat())
+        (product_id, price, datetime.now().isoformat())
     )
 
     conn.commit()
     conn.close()
+
+def get_prices(product_id: int) -> List[Tuple[str, float]]:
+    # Return list of (timestamp, price) for a product, ordered by timestamp ascending
+    conn = sqlite3.connect(DB_NAME)
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT timestamp, price FROM prices WHERE product_id=? ORDER BY timestamp ASC",
+        (product_id,)
+    )
+    rows = cur.fetchall()
+    conn.close()
+    return rows
