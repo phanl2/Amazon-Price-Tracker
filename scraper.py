@@ -26,7 +26,7 @@ def fetch_product_page(url: str) -> tuple[str, str]:
         allow_redirects=True
     )
     response.raise_for_status()
-    return response.text, response.url  # HTML and final URL
+    return response.text, response.url
 
 def parse_title(soup: BeautifulSoup) -> str:
     # Parse the product title. Fallback to first <h1> if productTitle not found.
@@ -40,7 +40,7 @@ def parse_title(soup: BeautifulSoup) -> str:
 def parse_price(soup: BeautifulSoup) -> float:
     # Parse the product price using multiple common selectors.
     price_selectors = [
-        "span.a-offscreen",      # most reliable
+        "span.a-offscreen",
         "span.a-price-whole"
     ]
 
@@ -51,7 +51,7 @@ def parse_price(soup: BeautifulSoup) -> float:
             try:
                 return float(price_text)
             except ValueError:
-                continue  # try next selector
+                continue
 
     raise ValueError("Could not find product price")
 
